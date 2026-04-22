@@ -153,6 +153,17 @@
     <div id="status">Esperando archivo Excel.</div>
   </div>
 
+  <div id="excelHelp" class="card">
+    <h2 style="margin:.1rem 0 .45rem; font-size:1rem;">Formato esperado de <code>data.xlsx</code></h2>
+    <p style="margin:.2rem 0 .45rem; color:#444;">El archivo debe tener 3 hojas (en este orden):</p>
+    <ol style="margin:.2rem 0 .2rem 1.1rem; padding:0; color:#333;">
+      <li><strong>Hoja 1:</strong> columna A = nombre, columna B = cantidad (puede venir como texto, ej. <code>5 pzs.</code>).</li>
+      <li><strong>Hoja 2:</strong> columna A = nombre, columna B = cantidad (formato numérico con punto miles y coma decimal, ej. <code>11.835,00</code>).</li>
+      <li><strong>Hoja 3:</strong> correlación de nombres (A = nombre hoja 1, B = nombre hoja 2).</li>
+    </ol>
+    <p style="margin:.55rem 0 0; color:#555;">La fila 1 se toma como encabezado en las 3 hojas; los datos empiezan desde la fila 2.</p>
+  </div>
+
   <div id="resultWrap" style="display:none;">
     <div class="table-scroll">
       <table>

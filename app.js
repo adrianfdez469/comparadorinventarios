@@ -8,6 +8,7 @@
   const resultWrap = document.getElementById("resultWrap");
   const resultBody = document.getElementById("resultBody");
   const summaryEl = document.getElementById("summary");
+  const excelHelp = document.getElementById("excelHelp");
 
   const overlay = document.getElementById("reason-overlay");
   const reasonText = document.getElementById("reason-text");
@@ -324,10 +325,12 @@ table{width:100%;border-collapse:collapse}th,td{padding:.55rem;border:1px solid 
       const rows = computeRows(inv1, inv2, corr);
       lastRows = rows;
       render(rows);
+      excelHelp.style.display = "none";
       setStatus("Comparación completada.", false);
     } catch (err) {
       resultWrap.style.display = "none";
       btnDownloadHtml.disabled = true;
+      excelHelp.style.display = "block";
       setStatus(`Error: ${err && err.message ? err.message : "no se pudo procesar el archivo."}`, true);
     }
   }
