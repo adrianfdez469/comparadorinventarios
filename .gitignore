@@ -1,3 +1,9 @@
 .venv/
 __pycache__/
 *.pyc
+*.xlsx
+*.py
+*.bat
+*.command
+*.msix
+*.txt

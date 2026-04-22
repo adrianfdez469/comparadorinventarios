@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Comparación de inventarios</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: #1a1a1a;
+      background: #f4f5f7;
+    }
+    body { margin: 0; padding: 1.5rem; }
+    h1 { font-size: 1.25rem; margin: 0 0 0.5rem; }
+    .meta { color: #555; font-size: 0.9rem; margin-bottom: 1rem; }
+    table {
+      width: 100%;
+      max-width: 1200px;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td { padding: 0.65rem 0.75rem; text-align: left; border-bottom: 1px solid #e8e8e8; }
+    th {
+      background: #2c3e50;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.status { text-align: center; width: 6rem; }
+    .ok { color: #0d7d4d; font-weight: 600; }
+    .fail { color: #c0392b; font-weight: 600; }
+    button.fail-reason-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      cursor: pointer;
+      text-decoration: underline dotted;
+      text-underline-offset: 3px;
+    }
+    button.fail-reason-btn:hover { color: #922b21; }
+    #reason-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #reason-overlay.is-open { display: flex; }
+    #reason-box {
+      background: #fff;
+      max-width: 28rem;
+      width: 100%;
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,.2);
+    }
+    #reason-box h2 {
+      margin: 0 0 0.6rem;
+      font-size: 1rem;
+      color: #c0392b;
+    }
+    #reason-box p { margin: 0; line-height: 1.45; }
+    #reason-close {
+      margin-top: 1rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #f8f8f8;
+      cursor: pointer;
+      font: inherit;
+    }
+    #reason-close:hover { background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Comparación de inventarios</h1>
+  <p class="meta">Fuente: <code>/Users/adrian/Documents/PROJECTS/InventoryComparer/data.xlsx</code></p>
+  <div id="reason-overlay" role="dialog" aria-modal="true" aria-labelledby="reason-title" aria-hidden="true">
+    <div id="reason-box">
+      <h2 id="reason-title">Motivo del fallo</h2>
+      <p id="reason-text"></p>
+      <button type="button" id="reason-close">Cerrar</button>
+    </div>
+  </div>
+  <script type="application/json" id="fail-reasons-data">["Las cantidades no coinciden: hoja 1 = 3, hoja 2 = 10. Diferencia = 7.", "Las cantidades no coinciden: hoja 1 = 4, hoja 2 = 11. Diferencia = 7.", "En la hoja 1, la cantidad de «Brekera 8 Li empotrar Adrian Ale (pzs.)|» no contiene un número reconocible (revisar texto en la segunda columna).", "Las cantidades no coinciden: hoja 1 = 3, hoja 2 = 10. Diferencia = 7.", "", "", "", "", "", "", "", "", "", "", "", "", "", "Las cantidades no coinciden: hoja 1 = 88, hoja 2 = 88.66. Diferencia = 0.66.", "", "", "", "", "Las cantidades no coinciden: hoja 1 = 59, hoja 2 = 79. Diferencia = 20.", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "«(sin nombre en correlación para hoja 2)» no existe en la hoja 2; se toma cantidad 0. Hoja 1 = 11. Diferencia = 11.", "«(sin nombre en hoja 1)» no existe en la hoja 1; se toma cantidad 0. Hoja 2 = 10. Diferencia = 10."]</script>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto (hoja 1)</th>
+        <th>Cantidad hoja 1</th>
+        <th>Resultado</th>
+        <th>Cantidad hoja 2</th>
+        <th>Producto (hoja 2)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Brekera 4 Li empotrar Adrian ale (pzs.)</td><td class="num">3</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="0" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">10</td><td>Caja de breaker de 4 posiciones</td></tr><tr><td>Brekera 6 Li empotrar Adrian Ale (pzs.)|</td><td class="num">4</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="1" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">11</td><td>Caja de breaker de 6 posiciones</td></tr><tr><td>Brekera 8 Li empotrar Adrian Ale (pzs.)|</td><td class="num">—</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="2" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">12</td><td>Caja de breaker de 8 posiciones</td></tr><tr><td>Brekera 10 Li empotrar Adrian Ale (pzs.)</td><td class="num">3</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="3" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">10</td><td>Caja de breaker de 10 posiciones</td></tr><tr><td>Breker sencillo 25 A Adrian Ale (pzs.)</td><td class="num">12</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">12</td><td>Breaker 1P 25A</td></tr><tr><td>Interuptor doble Adrian Ale (pzs.)</td><td class="num">36</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">36</td><td>Interruptor Doble</td></tr><tr><td>Interuptor triple Adrian Ale (pzs.)</td><td class="num">27</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">27</td><td>Interruptor Triple</td></tr><tr><td>Bombillo recargable 12w Adrian ale (pzs.)</td><td class="num">176</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">176</td><td>Bombilla recargable 12W</td></tr><tr><td>Bombillo recargable 15w Adrian Ale (pzs.)|</td><td class="num">153</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">153</td><td>Bombilla recargable 15W</td></tr><tr><td>Taladro EMTOP Adrian (pzs.)</td><td class="num">8</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">8</td><td>Taladro Percutor</td></tr><tr><td>latiguillo 1/2 100 cm adrian (pzs.)</td><td class="num">8</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">8</td><td>Latiguillo de media de 100cm</td></tr><tr><td>latiguillo de 1/2 80 cm adrian (pzs.)</td><td class="num">168</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">168</td><td>Latiguillo de media de 80cm</td></tr><tr><td>llave de lavamano adrian (pzs.)</td><td class="num">33</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">33</td><td>Pila de lavamanos</td></tr><tr><td>llave de fregadero en L adrian (pzs.)</td><td class="num">46</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">46</td><td>Pila de fregadero L</td></tr><tr><td>sifa acordeon de lavamanos adrian ale (pzs.)</td><td class="num">74</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">74</td><td>Sifa de lavamanos</td></tr><tr><td>llave de paso 3/4 metal adrian ale (pzs.)</td><td class="num">146</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">146</td><td>Llave de paso 3/4</td></tr><tr><td>llave paso 1/2 metal adrian ale (pzs.)</td><td class="num">166</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">166</td><td>Llave de paso 1/2</td></tr><tr><td>Rollos de estaño Adrian ale (pzs.)</td><td class="num">88</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="17" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">88.66</td><td>Alambre de soldar (estaño)</td></tr><tr><td>Rejilla de piso negra 40cm Adrian ale (pzs.)</td><td class="num">46</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">46</td><td>Rejilla de piso Negra 40cm</td></tr><tr><td>Rejilla de piso negra 30 cm adrian ale (pzs.)</td><td class="num">60</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">60</td><td>Rejilla de piso Negra 30cm</td></tr><tr><td>Cautin Adrian ale (pzs.)</td><td class="num">86</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">86</td><td>Cautin para soldar</td></tr><tr><td>Set de llaves españolas Adrian ale (pzs.)</td><td class="num">20</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">20</td><td>Set de llaves Españolas</td></tr><tr><td>Codo 50x90 adrian ale (pzs.)</td><td class="num">59</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="22" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">79</td><td>Codo de 90 grados de 50mm</td></tr><tr><td>Hidrolavadora 2000 psi Adrian ale (pzs.)</td><td class="num">1</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">1</td><td>Hidrolavadora Electrica 2000 psi</td></tr><tr><td>Hidrolavadora 1500 Adrian ale (pzs.)</td><td class="num">3</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">3</td><td>Hidrolavadora Electrica 1500 psi</td></tr><tr><td>Hidrolavadora1350 psi Adrian ale (pzs.)</td><td class="num">3</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">3</td><td>Hidrolavadora Electrica 1350 psi</td></tr><tr><td>Bomba centrifuga Expert 1hp Adrian ale (pzs.)</td><td class="num">2</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">2</td><td>Bomba de Agua 1HP</td></tr><tr><td>Bomba centrifuga Expert 2hp Adrian ale (pzs.)</td><td class="num">2</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">2</td><td>Bomba de Agua 2HP</td></tr><tr><td>Manguera transparente Adrian ale (pzs.)</td><td class="num">87</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">87</td><td>Metro de manguera de media transparente</td></tr><tr><td>Manguera reforzada punta de metal Adrian ale (pzs.)</td><td class="num">6</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">6</td><td>Manguera de media roja con conexiones de metal</td></tr><tr><td>Manguera amarilla flexible Adrian ale (pzs.)</td><td class="num">88</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">88</td><td>Manguera flexible amarilla para gas 3/8</td></tr><tr><td>Caja negra 4x2 Adrian ale (pzs.)|</td><td class="num">50</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">50</td><td>Caja 4x2 de empotrar negra</td></tr><tr><td>Pasta para soldar Adrian ale (pzs.)</td><td class="num">11</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">11</td><td>Pasta para soldar</td></tr><tr><td>Cinta transparente Adrian Ale (pzs.))</td><td class="num">58</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">58</td><td>Cinta transparente</td></tr><tr><td>Llave de paso 1&quot;china Adrian ale (pzs.)</td><td class="num">30</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">30</td><td>Llave de paso de 1 pulgada conector rapido</td></tr><tr><td>Llave de paso 3/4 china Adrian ale (pzs.)</td><td class="num">23</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">23</td><td>Llave de paso de 3/4 de pulgada conector rapido</td></tr><tr><td>Expancion amarilla 6x40 Adrian ale (pzs.)</td><td class="num">11835</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">11835</td><td>Tornillo expansion 6*40</td></tr><tr><td>Presilla pared 1/22 ojos Adrian ale (pzs.)</td><td class="num">1998</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">1998</td><td>Presilla de manguera de 1/2</td></tr><tr><td>Presilla pared 3/4 dos ojos Adrian ale (pzs.)</td><td class="num">1883</td><td class="status"><span class="ok" title="Coincide">✓ OK</span></td><td class="num">1883</td><td>Presilla de manguera de 3/4</td></tr><tr><td>Estaño 2m adrian ale (pzs.)|</td><td class="num">11</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="39" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">0</td><td></td></tr><tr><td></td><td class="num">0</td><td class="status"><button type="button" class="fail fail-reason-btn" data-row="40" title="Clic para ver el motivo">✗ Fail</button></td><td class="num">10</td><td>Interruptor Simple</td></tr>
+    </tbody>
+  </table>
+  <script>
+    (function () {
+      var reasons = JSON.parse(document.getElementById("fail-reasons-data").textContent);
+      var overlay = document.getElementById("reason-overlay");
+      var textEl = document.getElementById("reason-text");
+      var closeBtn = document.getElementById("reason-close");
+
+      function openReason(idx) {
+        var msg = reasons[idx] || "";
+        textEl.textContent = msg;
+        overlay.classList.add("is-open");
+        overlay.setAttribute("aria-hidden", "false");
+        closeBtn.focus();
+      }
+      function closeReason() {
+        overlay.classList.remove("is-open");
+        overlay.setAttribute("aria-hidden", "true");
+        textEl.textContent = "";
+      }
+
+      document.querySelectorAll(".fail-reason-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var idx = parseInt(btn.getAttribute("data-row"), 10);
+          if (!isNaN(idx)) openReason(idx);
+        });
+      });
+      closeBtn.addEventListener("click", closeReason);
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) closeReason();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && overlay.classList.contains("is-open")) closeReason();
+      });
+    })();
+  </script>
+</body>
+</html>

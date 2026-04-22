@@ -44,13 +44,19 @@
     button.primary:hover { background: #243546; }
     #status { margin-top: .6rem; color: #444; }
 
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      background: #fff;
+    }
     table {
       width: 100%;
+      min-width: 740px;
       border-collapse: collapse;
       background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,.08);
     }
     th, td {
       padding: .62rem .72rem;
@@ -105,6 +111,33 @@
     }
     #reason-title { margin: 0 0 .55rem; color: #c0392b; font-size: 1rem; }
     #reason-text { margin: 0; line-height: 1.45; }
+
+    @media (max-width: 700px) {
+      body { padding: .8rem; }
+      h1 { font-size: 1.12rem; }
+      .meta { font-size: .92rem; }
+      .card { padding: .8rem; }
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .55rem;
+      }
+      input[type="file"], button {
+        width: 100%;
+        max-width: none;
+      }
+      th, td {
+        padding: .52rem .56rem;
+        font-size: .88rem;
+      }
+      #reason-box {
+        max-width: none;
+        border-radius: 9px;
+      }
+      #reason-title { font-size: .96rem; }
+      #reason-text { font-size: .93rem; }
+      .summary { font-size: .9rem; }
+    }
   </style>
 </head>
 <body>
@@ -121,18 +154,20 @@
   </div>
 
   <div id="resultWrap" style="display:none;">
-    <table>
-      <thead>
-        <tr>
-          <th>Producto (hoja 1)</th>
-          <th>Cantidad hoja 1</th>
-          <th>Resultado</th>
-          <th>Cantidad hoja 2</th>
-          <th>Producto (hoja 2)</th>
-        </tr>
-      </thead>
-      <tbody id="resultBody"></tbody>
-    </table>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto (hoja 1)</th>
+            <th>Cantidad hoja 1</th>
+            <th>Resultado</th>
+            <th>Cantidad hoja 2</th>
+            <th>Producto (hoja 2)</th>
+          </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+    </div>
     <div id="summary" class="summary"></div>
   </div>
 
