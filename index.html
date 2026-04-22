@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comparador de Inventario (Web)</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: #1a1a1a;
+      background: #f4f5f7;
+    }
+    body { margin: 0; padding: 1.25rem; }
+    h1 { margin: 0 0 .5rem; font-size: 1.35rem; }
+    .meta { margin: 0 0 1rem; color: #555; }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+      padding: .95rem;
+      margin-bottom: 1rem;
+    }
+    .controls {
+      display: flex;
+      gap: .8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    input[type="file"] { max-width: 22rem; }
+    button {
+      border: 1px solid #bbb;
+      border-radius: 7px;
+      background: #f8f8f8;
+      padding: .48rem .85rem;
+      cursor: pointer;
+      font: inherit;
+    }
+    button:hover { background: #f0f0f0; }
+    button.primary {
+      background: #2c3e50;
+      color: #fff;
+      border-color: #2c3e50;
+    }
+    button.primary:hover { background: #243546; }
+    #status { margin-top: .6rem; color: #444; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    th, td {
+      padding: .62rem .72rem;
+      border-bottom: 1px solid #e8e8e8;
+      text-align: left;
+    }
+    th {
+      background: #2c3e50;
+      color: #fff;
+      font-size: .86rem;
+      font-weight: 600;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.status { text-align: center; width: 7rem; }
+    .ok { color: #0d7d4d; font-weight: 600; }
+    .fail { color: #c0392b; font-weight: 600; }
+    button.fail-reason-btn {
+      border: none;
+      background: none;
+      color: #c0392b;
+      font-weight: 600;
+      text-decoration: underline dotted;
+      text-underline-offset: 3px;
+      padding: 0;
+    }
+    .summary {
+      margin-top: .75rem;
+      color: #333;
+      font-size: .95rem;
+    }
+
+    #reason-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #reason-overlay.is-open { display: flex; }
+    #reason-box {
+      background: #fff;
+      width: 100%;
+      max-width: 31rem;
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .24);
+    }
+    #reason-title { margin: 0 0 .55rem; color: #c0392b; font-size: 1rem; }
+    #reason-text { margin: 0; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <h1>Comparador de Inventario (solo frontend)</h1>
+  <p class="meta">Sube <code>data.xlsx</code>, compara y revisa resultados sin backend.</p>
+
+  <div class="card">
+    <div class="controls">
+      <input id="xlsxInput" type="file" accept=".xlsx,.xlsm,.xlsb,.xls">
+      <button id="btnCompare" class="primary" type="button">Comparar</button>
+      <button id="btnDownloadHtml" type="button" disabled>Descargar reporte HTML</button>
+    </div>
+    <div id="status">Esperando archivo Excel.</div>
+  </div>
+
+  <div id="resultWrap" style="display:none;">
+    <table>
+      <thead>
+        <tr>
+          <th>Producto (hoja 1)</th>
+          <th>Cantidad hoja 1</th>
+          <th>Resultado</th>
+          <th>Cantidad hoja 2</th>
+          <th>Producto (hoja 2)</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+    <div id="summary" class="summary"></div>
+  </div>
+
+  <div id="reason-overlay" role="dialog" aria-modal="true" aria-labelledby="reason-title" aria-hidden="true">
+    <div id="reason-box">
+      <h2 id="reason-title">Motivo del fallo</h2>
+      <p id="reason-text"></p>
+      <button id="reason-close" type="button" style="margin-top: .8rem;">Cerrar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
