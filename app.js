@@ -87,6 +87,39 @@
     return map;
   }
 
+  function stripEntityTokens(name) {
+    return String(name)
+      .replace(/\badrian\b/gi, "")
+      .replace(/\bale\b/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function normalizeProductName(name) {
+    return stripEntityTokens(
+      String(name)
+        .replace(/\s*\(pzs\.\)\s*$/i, "")
+        .trim()
+    ).toLowerCase();
+  }
+
+  function buildInv1Index(inv1) {
+    const index = new Map();
+    for (const key of inv1.keys()) {
+      const norm = normalizeProductName(key);
+      if (!index.has(norm)) index.set(norm, key);
+    }
+    return index;
+  }
+
+  function lookupInv1(name, inv1, inv1Index) {
+    if (!name) return { in1: false, q1: null };
+    if (inv1.has(name)) return { in1: true, q1: inv1.get(name) };
+    const key = inv1Index.get(normalizeProductName(name));
+    if (key !== undefined) return { in1: true, q1: inv1.get(key) };
+    return { in1: false, q1: null };
+  }
+
   function buildCorrelation(sheetRows) {
     const pairs = [];
     for (let i = 1; i < sheetRows.length; i += 1) {
@@ -123,11 +156,15 @@
     const rows = [];
     const mapped1 = new Set();
     const mapped2 = new Set();
+    const inv1Index = buildInv1Index(inv1);
+
+    function markMappedName1(name) {
+      if (name) mapped1.add(normalizeProductName(name));
+    }
 
     function appendRow(name1, name2) {
-      const in1 = Boolean(name1) && inv1.has(name1);
+      const { in1, q1 } = lookupInv1(name1, inv1, inv1Index);
       const in2 = Boolean(name2) && inv2.has(name2);
-      const q1 = in1 ? inv1.get(name1) : null;
       const q2 = in2 ? inv2.get(name2) : null;
 
       let ok = false;
@@ -163,13 +200,13 @@
     }
 
     correlation.forEach(([name1, name2]) => {
-      mapped1.add(name1);
+      markMappedName1(name1);
       if (name2) mapped2.add(name2);
       appendRow(name1, name2);
     });
 
     for (const name1 of inv1.keys()) {
-      if (!mapped1.has(name1)) appendRow(name1, "");
+      if (!mapped1.has(normalizeProductName(name1))) appendRow(name1, "");
     }
     for (const name2 of inv2.keys()) {
       if (!mapped2.has(name2)) appendRow("", name2);
